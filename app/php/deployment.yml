@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-app
+  template:
+    metadata:
+      labels:
+        app: php-app
+    spec:
+      containers:
+      - name: php-app
+        image: galvaradosentinella/php-app:latest
+        env:
+        - name: MYSQL_HOST
+          value: mysql
+        - name: MYSQL_USER
+          value: userapp
+        - name: MYSQL_PASSWORD
+          value: s0m3p4ss
+        - name: MYSQL_DATABASE
+          value: myapp
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: dockerhub
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-app
+spec:
+  type: NodePort
+  selector:
+    app: php-app
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30000  # Access the app on any node at port 30000
